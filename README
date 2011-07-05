@@ -1,0 +1,4 @@
+TODO:
+    Add better docs
+    Add tests
+    Add more pool implementations (including better Riak client)
