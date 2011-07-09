@@ -13,7 +13,7 @@ start_link() ->
 
 do(Fun, Extra) ->
     Do = fun (Pid, _) ->
-            erlang:apply(riakc_pb_sock, Fun, [Pid | Extra])
+            erlang:apply(riakc_pb_socket, Fun, [Pid | Extra])
         end,
     gen_pool:q(?MODULE, Do, []).
 
