@@ -15,7 +15,7 @@ do(Fun, Extra) ->
     Do = fun (Pid, _) ->
             erlang:apply(riakc_pb_sock, Fun, [Pid | Extra])
         end,
-    gen_pool:do(?MODULE, Do, []).
+    gen_pool:q(?MODULE, Do, []).
 
 connection(Options) ->
     Host = proplists:get_value(host, Options, "127.0.0.1"),
