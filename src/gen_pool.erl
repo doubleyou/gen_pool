@@ -14,8 +14,6 @@
     terminate/2
 ]).
 
--opaque r_strategy() :: rotate | kill.
-
 -record(state, {
     module :: atom(),
     connection_options = [] :: list(),
@@ -114,7 +112,14 @@ handle_info({'DOWN', _, process, Pid, _}, State = #state{ free_pool = Free,
     },
     {noreply, NewState}.
 
-terminate(_Reason, _State) ->
+terminate(_Reason, #state{ free_pool = Free, busy_pool = Busy }) ->
+    kill_connections(Free),
+    P = spawn(fun () ->
+        receive
+            kill -> kill_connections(Busy)
+        end
+    end),
+    erlang:send_after(?BUSY_CONNECTIONS_KILL_TIMOUT, P, kill),
     ok.
 
 %%
@@ -125,6 +130,9 @@ spawn_connection(#state{ module = Module, connection_options = ConnOpts }) ->
     Pid = Module:connection(ConnOpts),
     erlang:monitor(process, Pid),
     Pid.
+
+kill_connections(Conns) ->
+    lists:map(fun (Pid) -> exit(Pid, kill) end, Conns).
 
 parse_options([], State) ->
     State;
