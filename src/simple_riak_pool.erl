@@ -1,15 +1,15 @@
 -module(simple_riak_pool).
 -behavior(gen_pool).
 -export([
-    start_link/0,
+    start_link/1,
     do/2
 ]).
 -export([
     connection/1
 ]).
 
-start_link() ->
-    gen_pool:start_link(?MODULE, ?MODULE, []).
+start_link(Options) ->
+    gen_pool:start_link(?MODULE, ?MODULE, Options).
 
 do(Fun, Extra) ->
     Do = fun (Pid, _) ->
